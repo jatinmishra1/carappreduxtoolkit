@@ -1,23 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import { logoutUser } from "./features/auth/authSlice";
+import { useState } from "react";
+import { Navigate } from "react-router-dom";
+import Home from "./pages/Home";
 
 function App() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const dispatch = useDispatch();
+
+  function handleLogout() {
+    dispatch(logoutUser());
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>WELCOME TO CAR BOOKING APPP</h1>
+      <Router>
+        <Routes>
+          {!user && (
+            <>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </>
+          )}
+          {user && (
+            <>
+              <Route path="/" element={<Home />} />
+            </>
+          )}
+          <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
+        </Routes>
+      </Router>
+      {user && <button onClick={handleLogout}>Logout</button>}
     </div>
   );
 }
